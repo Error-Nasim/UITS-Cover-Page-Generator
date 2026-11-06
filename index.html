@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UITS Cover Page Generator</title>
+<script>
+  try { const t = localStorage.getItem("uits-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<script src="logo.js"></script>
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+<style>
+  :root {
+    --maroon: #8a1c22;
+    --maroon-dark: #6d1419;
+    --bg: #ffffff;
+    --panel: #f6ecec;
+    --border: #e3c9cb;
+    --text: #222;
+    --muted: #6b5b5c;
+    --accent: #8a1c22;
+    --field: #ffffff;
+    --hover: #fbf3f3;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181b;
+      --panel: #232428;
+      --border: #3a3b41;
+      --text: #e8e6e6;
+      --muted: #a5a0a1;
+      --accent: #e9858b;
+      --field: #1b1c20;
+      --hover: #2d2023;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181b;
+    --panel: #232428;
+    --border: #3a3b41;
+    --text: #e8e6e6;
+    --muted: #a5a0a1;
+    --accent: #e9858b;
+    --field: #1b1c20;
+    --hover: #2d2023;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    transition: background .2s, color .2s;
+    display: flex; flex-direction: column;
+  }
+  header {
+    padding: 10px 16px 6px; width: 100%; max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; color: var(--accent); font-size: 22px; }
+  header p { margin: 0; color: var(--muted); font-size: 13px; }
+  .theme-btn {
+    margin-left: auto; align-self: center; display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text);
+  }
+  .theme-btn:hover { border-color: var(--accent); }
+
+  main {
+    flex: 1; min-height: 0; width: 100%; max-width: 1400px; margin: 0 auto;
+    padding: 4px 16px 12px;
+    display: grid; grid-template-columns: minmax(0, 620px) minmax(0, 1fr); gap: 16px;
+  }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px;
+  }
+  form.panel {
+    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: 10px; align-content: space-between; overflow: auto;
+  }
+  .f2 { grid-column: span 2; } .f3 { grid-column: span 3; }
+  .f4 { grid-column: span 4; } .f6 { grid-column: span 6; }
+  .section-title {
+    grid-column: span 6;
+    font-size: clamp(11px, 1.3vh, 13px); text-transform: uppercase; letter-spacing: .06em;
+    color: var(--accent); font-weight: 700; margin: 8px 0 0;
+    border-bottom: 1px solid var(--border); padding-bottom: 2px;
+  }
+  .section-title:first-child { margin-top: 0; }
+  label { display: block; font-size: clamp(12px, 1.45vh, 15px); font-weight: 600; margin: 6px 0 3px; }
+  input, select {
+    width: 100%; height: clamp(30px, 4.3vh, 46px); padding: 4px 10px; font-size: clamp(14px, 1.7vh, 17px);
+    border: 1px solid var(--border); border-radius: 7px; background: var(--field); color: var(--text);
+    font-family: inherit;
+  }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+
+  .btn {
+    display: block; width: 100%; height: clamp(38px, 5.4vh, 56px); padding: 0 10px; font-size: clamp(15px, 1.8vh, 18px); font-weight: 600;
+    border-radius: 8px; cursor: pointer; border: 1px solid var(--maroon); font-family: inherit;
+  }
+  .btn-primary { background: var(--maroon); color: #fff; }
+  .btn-primary:hover { background: var(--maroon-dark); }
+  .btn-outline { background: var(--field); color: var(--accent); border-color: var(--accent); }
+  .btn-outline:hover { background: var(--hover); }
+  .btn-small { height: clamp(30px, 4.3vh, 46px); padding: 0 10px; font-size: clamp(12px, 1.5vh, 15px); font-weight: 600; }
+  .clear-wrap { display: flex; align-items: flex-end; }
+  .actions { grid-column: span 6; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  @media (max-height: 620px) {
+    label { margin: 4px 0 2px; }
+    input, select, .btn-small { height: 30px; }
+    .btn { height: 36px; }
+    header { padding: 6px 16px 2px; }
+    header h1 { font-size: 18px; }
+    header p { display: none; }
+    .section-title { margin-top: 5px; }
+    .actions { margin-top: 8px; }
+  }
+
+  .preview-panel { display: flex; flex-direction: column; min-height: 0; }
+  .preview-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .page-wrap { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+
+  /* A4 page at 96dpi: 794 x 1123 px — always white like real paper */
+  .page {
+    position: absolute; top: 0; left: 50%;
+    width: 794px; height: 1123px; background: #fff;
+    padding: 58px 86px; box-shadow: 0 2px 12px rgba(0,0,0,.15);
+    font-family: "Times New Roman", Times, serif; font-size: 16pt; color: #000;
+    transform-origin: top left;
+  }
+  .page .logo { display: block; width: 605px; height: auto; margin: 0 auto; }
+  .page .heading { text-align: center; font-size: 24pt; margin: 22px 0 0; }
+  .page .heading:empty { display: none; }
+  .page .heading:empty + .doc-type { margin-top: 22px; }
+  .page .doc-type { text-align: center; font-size: 24pt; text-decoration: underline; margin: 10px 0 34px; }
+  .page .line { margin: 0 0 10px; display: flex; }
+  .page .line .k { flex: 0 0 170px; white-space: nowrap; }
+  .page .by .line .k { flex: 0 0 200px; white-space: nowrap; }
+  .page .line .v { flex: 1; }
+  .page .sub { font-size: 16pt; text-decoration: underline; margin: 0 0 12px; }
+  .page .to { margin-top: 44px; min-height: 270px; }
+  .page .to p { margin: 0 0 4px; }
+  .page .to .tname { font-weight: bold; }
+
+  /* Phones / small windows: stack and allow normal scrolling */
+  @media (max-width: 900px) {
+    body { display: block; height: auto; }
+    main { grid-template-columns: 1fr; }
+    form.panel { overflow: visible; }
+    .page-wrap { flex: none; height: 600px; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 0; }
+    html, body { height: auto !important; margin: 0 !important; background: #fff !important; }
+    body { display: block !important; }
+    header, form.panel, .preview-label { display: none !important; }
+    main, .preview-panel, .page-wrap {
+      display: block !important; padding: 0 !important; margin: 0 !important; border: 0 !important;
+      background: none !important; height: auto !important; max-width: none !important; overflow: visible !important;
+    }
+    .page {
+      position: static !important; transform: none !important; box-shadow: none !important;
+      width: 210mm !important; height: 296mm !important; overflow: hidden !important;
+      page-break-after: avoid; break-after: avoid; break-inside: avoid;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>UITS Assignment / Lab Report Cover Page Generator</h1>
+  <button type="button" class="theme-btn" id="themeBtn" aria-label="Toggle dark mode"></button>
+</header>
+
+<main>
+  <form class="panel" id="form" autocomplete="on" onsubmit="return false">
+    <div class="section-title">Document</div>
+    <div class="f2">
+      <label for="docType">Document Type</label>
+      <select id="docType">
+        <option value="Assignment">Assignment</option>
+        <option value="Lab Report">Lab Report</option>
+      </select>
+    </div>
+    <div class="f2">
+      <label for="docNo">No. (optional)</label>
+      <input id="docNo" placeholder="e.g. 1">
+    </div>
+    <div class="f2">
+      <label for="date">Date of Submission</label>
+      <input id="date" type="date">
+    </div>
+    <div class="f6">
+      <label for="topic">Course Topic/Title (optional)</label>
+      <input id="topic" placeholder="Shown at the top, above Assignment / Lab Report">
+    </div>
+
+    <div class="section-title">Course</div>
+    <div class="f2">
+      <label for="courseTitle">Course Title</label>
+      <input id="courseTitle" placeholder="e.g. Data Structures">
+    </div>
+    <div class="f2">
+      <label for="courseCode">Course Code</label>
+      <input id="courseCode" placeholder="e.g. CSE 221">
+    </div>
+    <div class="f2">
+      <label for="expNo">Experiment No. (optional)</label>
+      <input id="expNo" placeholder="e.g. 3">
+    </div>
+
+    <div class="section-title">Submitted To</div>
+    <div class="f2">
+      <label for="teacher">Teacher's Name</label>
+      <input id="teacher" placeholder="Teacher's name">
+    </div>
+    <div class="f2">
+      <label for="designation">Designation</label>
+      <input id="designation" list="designations" placeholder="e.g. Lecturer">
+    </div>
+    <div class="f2">
+      <label for="tDept">Teacher's Department</label>
+      <input id="tDept" list="departments" placeholder="e.g. CSE">
+    </div>
+
+    <div class="section-title">Submitted By</div>
+    <div class="f4">
+      <label for="name">Name</label>
+      <input id="name" placeholder="Your full name" data-save>
+    </div>
+    <div class="f2">
+      <label for="sid">ID</label>
+      <input id="sid" placeholder="e.g. 2125051001" data-save>
+    </div>
+    <div class="f2">
+      <label for="semester">Semester</label>
+      <input id="semester" list="semesters" placeholder="e.g. 5th" data-save>
+    </div>
+    <div class="f2">
+      <label for="batch">Batch</label>
+      <input id="batch" placeholder="e.g. 51" data-save>
+    </div>
+    <div class="f2">
+      <label for="section">Section</label>
+      <input id="section" placeholder="e.g. 7A1" data-save>
+    </div>
+    <div class="f4">
+      <label for="dept">Department</label>
+      <input id="dept" list="departments" placeholder="e.g. CSE" data-save>
+    </div>
+    <div class="f2 clear-wrap">
+      <button type="button" class="btn btn-outline btn-small" id="clearSaved"
+        title="Your name, ID, semester, batch, section and department are remembered in this browser.">Clear saved info</button>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="dlDocx">Download Word (.docx)</button>
+      <button type="button" class="btn btn-outline" id="dlPdf" title="Choose “Save as PDF” in the print dialog">Download PDF / Print</button>
+    </div>
+
+    <datalist id="designations">
+      <option value="Lecturer"><option value="Senior Lecturer"><option value="Assistant Professor">
+      <option value="Associate Professor"><option value="Professor">
+    </datalist>
+    <datalist id="departments">
+      <option value="CSE"><option value="EEE"><option value="Civil Engineering"><option value="BBA">
+      <option value="English"><option value="Law"><option value="Pharmacy"><option value="IT"><option value="Social Work">
+    </datalist>
+    <datalist id="semesters">
+      <option value="1st"><option value="2nd"><option value="3rd"><option value="4th"><option value="5th">
+      <option value="6th"><option value="7th"><option value="8th">
+    </datalist>
+  </form>
+
+  <section class="panel preview-panel">
+    <div class="preview-label">Live preview</div>
+    <div class="page-wrap" id="pageWrap">
+      <div class="page" id="page">
+        <img class="logo" id="logo" alt="UITS logo">
+        <div class="heading" id="pHeading"></div>
+        <div class="doc-type" id="pType"></div>
+        <div class="line"><span class="k">Course Title</span><span class="v" id="pCourseTitle">:</span></div>
+        <div class="line"><span class="k">Course Code</span><span class="v" id="pCourseCode">:</span></div>
+        <div class="line" id="pExpLine" style="display:none"><span class="k">Experiment No</span><span class="v" id="pExp">:</span></div>
+
+        <div class="to">
+          <div class="sub">Submitted to:</div>
+          <p class="tname" id="pTeacher"></p>
+          <p id="pDesignation"></p>
+          <p id="pTDept"></p>
+          <p id="pUni"></p>
+        </div>
+
+        <div class="by">
+          <div class="sub">Submitted by:</div>
+          <div class="line"><span class="k">Name</span><span class="v" id="pName">:</span></div>
+          <div class="line"><span class="k">ID</span><span class="v" id="pSid">:</span></div>
+          <div class="line"><span class="k">Semester</span><span class="v" id="pSemester">:</span></div>
+          <div class="line"><span class="k">Batch</span><span class="v" id="pBatch">:</span></div>
+          <div class="line"><span class="k">Section</span><span class="v" id="pSection">:</span></div>
+          <div class="line"><span class="k">Department</span><span class="v" id="pDept">:</span></div>
+          <div class="line"><span class="k">Date of Submission</span><span class="v" id="pDate">:</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const UNI = "University of Information Technology & Sciences";
+  const STORE_KEY = "uits-cover-personal";
+  const ids = ["docType","docNo","topic","courseTitle","courseCode","expNo","teacher","designation","tDept",
+               "name","sid","semester","batch","section","dept","date"];
+
+  $("logo").src = window.UITS_LOGO;
+
+  // ---------- dark mode ----------
+  const root = document.documentElement;
+  const sysDark = window.matchMedia("(prefers-color-scheme: dark)");
+  const isDark = () => (root.dataset.theme || (sysDark.matches ? "dark" : "light")) === "dark";
+  function themeLabel() { $("themeBtn").innerHTML = isDark() ? "&#9728;&#65039; Light mode" : "&#127769; Dark mode"; }
+  $("themeBtn").onclick = () => {
+    const next = isDark() ? "light" : "dark";
+    root.dataset.theme = next;
+    try { localStorage.setItem("uits-theme", next); } catch (e) {}
+    themeLabel();
+  };
+  sysDark.addEventListener("change", themeLabel);
+  themeLabel();
+
+  // ---------- saved personal info ----------
+  const saveFields = [...document.querySelectorAll("[data-save]")].map(e => e.id);
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    saveFields.forEach(k => { if (saved[k]) $(k).value = saved[k]; });
+  } catch (e) {}
+  function persist() {
+    try {
+      const o = {}; saveFields.forEach(k => o[k] = $(k).value);
+      localStorage.setItem(STORE_KEY, JSON.stringify(o));
+    } catch (e) {}
+  }
+  $("clearSaved").onclick = () => {
+    try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+    saveFields.forEach(k => $(k).value = "");
+    render();
+  };
+
+  // default date = today
+  const t = new Date();
+  $("date").value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
+
+  // ---------- data ----------
+  function fmtDate(v) {
+    if (!v) return "";
+    const [y, m, d] = v.split("-").map(Number);
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    return `${String(d).padStart(2,"0")} ${months[m-1]} ${y}`;
+  }
+  function data() {
+    const v = {}; ids.forEach(k => v[k] = $(k).value.trim());
+    v.heading = v.topic;
+    v.typeLine = v.docType + (v.docNo ? " - " + v.docNo : "");
+    v.dateStr = fmtDate(v.date);
+    v.uni = v.teacher ? UNI : "";
+    v.tDeptLine = v.tDept ? "Department of " + v.tDept.replace(/^Department of\s*/i, "") : "";
+    return v;
+  }
+
+  // ---------- preview ----------
+  function render() {
+    const v = data();
+    $("pHeading").textContent = v.heading;
+    $("pType").textContent = v.typeLine;
+    $("pCourseTitle").textContent = ": " + v.courseTitle;
+    $("pCourseCode").textContent = ": " + v.courseCode;
+    $("pExp").textContent = ": " + v.expNo;
+    $("pExpLine").style.display = v.expNo ? "" : "none";
+    $("pTeacher").textContent = v.teacher;
+    $("pDesignation").textContent = v.designation;
+    $("pTDept").textContent = v.tDeptLine;
+    $("pUni").textContent = v.uni;
+    $("pName").textContent = ": " + v.name;
+    $("pSid").textContent = ": " + v.sid;
+    $("pSemester").textContent = ": " + v.semester;
+    $("pBatch").textContent = ": " + v.batch;
+    $("pSection").textContent = ": " + v.section;
+    $("pDept").textContent = ": " + v.dept;
+    $("pDate").textContent = ": " + v.dateStr;
+  }
+  ids.forEach(k => $(k).addEventListener("input", () => { render(); persist(); }));
+  render();
+
+  // scale the A4 page to fit the preview column
+  const wrap = $("pageWrap"), page = $("page");
+  function fit() {
+    const s = Math.min(1, wrap.clientWidth / 794, wrap.clientHeight / 1123);
+    page.style.transform = `translateX(-50%) scale(${s})`;
+    page.style.transformOrigin = "top center";
+  }
+  new ResizeObserver(fit).observe(wrap);
+  window.addEventListener("beforeprint", () => { page.style.transform = "none"; });
+  window.addEventListener("afterprint", fit);
+
+  // ---------- downloads ----------
+  function fileBase() {
+    const v = data();
+    return [v.sid, v.courseCode.replace(/\s+/g, ""), v.typeLine.replace(/[\s.\-]+/g, "_")]
+      .filter(Boolean).join("_") || "UITS_Cover_Page";
+  }
+
+  $("dlPdf").onclick = () => {
+    const old = document.title;
+    document.title = fileBase();
+    window.print();
+    document.title = old;
+  };
+
+  $("dlDocx").onclick = async () => {
+    if (!window.docx) { alert("Word export library failed to load. Check your internet connection."); return; }
+    const D = window.docx;
+    const v = data();
+    const FONT = "Times New Roman";
+    const run = (text, o = {}) => new D.TextRun({ text, font: FONT, size: 32, ...o });
+    const kv = (k, val, tab) => new D.Paragraph({
+      tabStops: [{ type: D.TabStopType.LEFT, position: tab }],
+      spacing: { after: 100 },
+      children: [run(k), run("\t: " + val)],
+    });
+
+    const b64 = window.UITS_LOGO.split(",")[1];
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+
+    const children = [
+      new D.Paragraph({
+        alignment: D.AlignmentType.CENTER,
+        children: [new D.ImageRun({ type: "png", data: bytes, transformation: { width: 605, height: 102 } })],
+      }),
+      ...(v.heading ? [new D.Paragraph({ alignment: D.AlignmentType.CENTER, spacing: { before: 330 },
+        children: [run(v.heading, { size: 48 })] })] : []),
+      new D.Paragraph({ alignment: D.AlignmentType.CENTER, spacing: { before: v.heading ? 150 : 330, after: 500 },
+        children: [run(v.typeLine, { size: 48, underline: {} })] }),
+      kv("Course Title", v.courseTitle, 2550),
+      kv("Course Code", v.courseCode, 2550),
+      ...(v.expNo ? [kv("Experiment No", v.expNo, 2550)] : []),
+      new D.Paragraph({ spacing: { before: 660, after: 180 }, children: [run("Submitted to:", { underline: {} })] }),
+    ];
+    [[v.teacher, true], [v.designation], [v.tDeptLine], [v.uni]].forEach(([txt, bold]) => {
+      if (txt) children.push(new D.Paragraph({ spacing: { after: 60 }, children: [run(txt, { bold: !!bold })] }));
+    });
+    // fixed gap so "Submitted by" sits in the lower part of the page like the template
+    const filled = [v.teacher, v.designation, v.tDeptLine, v.uni].filter(Boolean).length;
+    children.push(new D.Paragraph({ spacing: { before: Math.max(400, 3200 - filled * 430), after: 180 },
+      children: [run("Submitted by:", { underline: {} })] }));
+    [["Name", v.name], ["ID", v.sid], ["Semester", v.semester], ["Batch", v.batch],
+     ["Section", v.section], ["Department", v.dept], ["Date of Submission", v.dateStr]]
+      .forEach(([k, val]) => children.push(kv(k, val, 3000)));
+
+    const doc = new D.Document({
+      styles: { default: { document: { run: { font: FONT, size: 32 } } } },
+      sections: [{
+        properties: { page: {
+          size: { width: 11906, height: 16838 },
+          margin: { top: 864, bottom: 864, left: 1296, right: 1296 },
+        } },
+        children,
+      }],
+    });
+    const blob = await D.Packer.toBlob(doc);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fileBase() + ".docx";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  };
+})();
+</script>
+</body>
+</html>
