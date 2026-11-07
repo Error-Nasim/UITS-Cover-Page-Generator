@@ -175,8 +175,8 @@
   /* Phone: desktop layout at a fixed 1000px width, content sits at the top */
   html.phone, html.phone body { height: auto; }
   html.phone body { display: block; width: 1000px; zoom: var(--phone-zoom, 1); }
-  html.phone main { grid-template-columns: 1.15fr 1fr; align-items: start; }
-  html.phone form.panel { align-content: start; overflow: visible; }
+  html.phone main { grid-template-columns: 1.15fr 1fr; align-items: stretch; }
+  html.phone form.panel { align-content: space-between; overflow: visible; }
   html.phone label { font-size: 12px; margin: 6px 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   html.phone .section-title { font-size: 11px; margin-top: 10px; }
   html.phone .section-title:first-child { margin-top: 0; }
