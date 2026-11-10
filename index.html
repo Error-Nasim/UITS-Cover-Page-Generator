@@ -99,8 +99,18 @@
     display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
     column-gap: 10px; align-content: space-between; overflow: auto;
   }
+  .f1 { grid-column: span 1; }
   .f2 { grid-column: span 2; } .f3 { grid-column: span 3; }
   .f4 { grid-column: span 4; } .f6 { grid-column: span 6; }
+  .team-m-hdr {
+    grid-column: span 6;
+    font-size: clamp(10px, 1.2vh, 12px);
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin: 6px 0 2px;
+  }
   .section-title {
     grid-column: span 6;
     font-size: clamp(11px, 1.3vh, 13px); text-transform: uppercase; letter-spacing: .06em;
@@ -163,6 +173,15 @@
   .page .to { margin-top: 44px; min-height: 270px; }
   .page .to p { margin: 0 0 4px; }
   .page .to .tname { font-weight: bold; }
+
+  /* Team members section on the A4 page */
+  .page .team-heading { font-weight: bold; font-size: 16pt; margin: 0 0 16px; font-family: "Times New Roman", Times, serif; }
+  .page .team-grid { display: grid; width: 100%; font-family: "Times New Roman", Times, serif; }
+  .page .team-grid.cols-2 { grid-template-columns: repeat(2, 1fr); gap: 48px; font-size: 15pt; line-height: 1.45; }
+  .page .team-grid.cols-3 { grid-template-columns: repeat(3, 1fr); gap: 24px; font-size: 13.5pt; line-height: 1.4; }
+  .page .team-grid.cols-4 { grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: 12pt; line-height: 1.35; }
+  .page .team-col { display: flex; flex-direction: column; gap: 3px; }
+  .page .team-row { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* Phones / small windows: stack and allow normal scrolling */
   @media (max-width: 900px) {
@@ -262,33 +281,129 @@
     </div>
 
     <div class="section-title">Submitted By</div>
-    <div class="f4">
-      <label for="name">Name</label>
-      <input id="name" placeholder="Your full name" data-save>
+    <div class="f3">
+      <label for="teamMode">Submission Type</label>
+      <select id="teamMode" data-save>
+        <option value="1">Individual (1 Student)</option>
+        <option value="2">Team (2 Members)</option>
+        <option value="3">Team (3 Members)</option>
+        <option value="4">Team (4 Members)</option>
+      </select>
     </div>
-    <div class="f2">
-      <label for="sid">ID</label>
-      <input id="sid" placeholder="e.g. 2125051001" data-save>
-    </div>
-    <div class="f2">
-      <label for="semester">Semester</label>
-      <input id="semester" list="semesters" placeholder="e.g. 5th" data-save>
-    </div>
-    <div class="f2">
-      <label for="batch">Batch</label>
-      <input id="batch" placeholder="e.g. 51" data-save>
-    </div>
-    <div class="f2">
-      <label for="section">Section</label>
-      <input id="section" placeholder="e.g. 7A1" data-save>
-    </div>
-    <div class="f4">
-      <label for="dept">Department</label>
-      <input id="dept" list="departments" placeholder="e.g. CSE" data-save>
-    </div>
-    <div class="f2 clear-wrap">
+    <div class="f3 clear-wrap">
       <button type="button" class="btn btn-outline btn-small" id="clearSaved"
-        title="Your name, ID, semester, batch, section and department are remembered in this browser.">Clear saved info</button>
+        title="Your name, ID, and team details are remembered in this browser.">Clear saved info</button>
+    </div>
+
+    <!-- Individual Student Mode -->
+    <div id="singleWrap" style="display:contents">
+      <div class="f4">
+        <label for="name">Name</label>
+        <input id="name" placeholder="Your full name" data-save>
+      </div>
+      <div class="f2">
+        <label for="sid">ID</label>
+        <input id="sid" placeholder="e.g. 0432320005101033" data-save>
+      </div>
+      <div class="f2">
+        <label for="semester">Semester</label>
+        <input id="semester" list="semesters" placeholder="e.g. 6th" data-save>
+      </div>
+      <div class="f2">
+        <label for="section">Section</label>
+        <input id="section" placeholder="e.g. 6A2" data-save>
+      </div>
+      <div class="f2">
+        <label for="batch">Batch</label>
+        <input id="batch" placeholder="e.g. 51" data-save>
+      </div>
+      <div class="f6">
+        <label for="dept">Department</label>
+        <input id="dept" list="departments" placeholder="e.g. CSE" data-save>
+      </div>
+    </div>
+
+    <!-- Team Mode (2, 3, or 4 Members) -->
+    <div id="teamWrap" style="display:none">
+      <!-- Member 1 (You) -->
+      <div class="team-m-hdr">Member 1 (You)</div>
+      <div class="f2">
+        <label for="m1_name">Name</label>
+        <input id="m1_name" placeholder="Full name" data-save>
+      </div>
+      <div class="f2">
+        <label for="m1_sid">ID</label>
+        <input id="m1_sid" placeholder="e.g. 0432320005101033" data-save>
+      </div>
+      <div class="f1">
+        <label for="m1_dept">Dept</label>
+        <input id="m1_dept" list="departments" placeholder="CSE" data-save>
+      </div>
+      <div class="f1">
+        <label for="m1_sec">Section</label>
+        <input id="m1_sec" placeholder="6A2" data-save>
+      </div>
+
+      <!-- Member 2 -->
+      <div class="team-m-hdr">Member 2</div>
+      <div class="f2">
+        <label for="m2_name">Name</label>
+        <input id="m2_name" placeholder="Full name" data-save>
+      </div>
+      <div class="f2">
+        <label for="m2_sid">ID</label>
+        <input id="m2_sid" placeholder="e.g. 0432320005101047" data-save>
+      </div>
+      <div class="f1">
+        <label for="m2_dept">Dept</label>
+        <input id="m2_dept" list="departments" placeholder="CSE" data-save>
+      </div>
+      <div class="f1">
+        <label for="m2_sec">Section</label>
+        <input id="m2_sec" placeholder="6A2" data-save>
+      </div>
+
+      <!-- Member 3 -->
+      <div id="m3Wrap" style="display:contents">
+        <div class="team-m-hdr">Member 3</div>
+        <div class="f2">
+          <label for="m3_name">Name</label>
+          <input id="m3_name" placeholder="Full name" data-save>
+        </div>
+        <div class="f2">
+          <label for="m3_sid">ID</label>
+          <input id="m3_sid" placeholder="e.g. 0432320005101036" data-save>
+        </div>
+        <div class="f1">
+          <label for="m3_dept">Dept</label>
+          <input id="m3_dept" list="departments" placeholder="CSE" data-save>
+        </div>
+        <div class="f1">
+          <label for="m3_sec">Section</label>
+          <input id="m3_sec" placeholder="5A2" data-save>
+        </div>
+      </div>
+
+      <!-- Member 4 -->
+      <div id="m4Wrap" style="display:contents">
+        <div class="team-m-hdr">Member 4</div>
+        <div class="f2">
+          <label for="m4_name">Name</label>
+          <input id="m4_name" placeholder="Full name" data-save>
+        </div>
+        <div class="f2">
+          <label for="m4_sid">ID</label>
+          <input id="m4_sid" placeholder="e.g. 0432320005101018" data-save>
+        </div>
+        <div class="f1">
+          <label for="m4_dept">Dept</label>
+          <input id="m4_dept" list="departments" placeholder="CSE" data-save>
+        </div>
+        <div class="f1">
+          <label for="m4_sec">Section</label>
+          <input id="m4_sec" placeholder="6A1" data-save>
+        </div>
+      </div>
     </div>
 
     <div class="actions">
@@ -329,15 +444,26 @@
           <p id="pUni"></p>
         </div>
 
-        <div class="by">
+        <!-- Individual Submitted by -->
+        <div class="by" id="singleBy">
           <div class="sub">Submitted by:</div>
           <div class="line"><span class="k">Name</span><span class="v" id="pName">:</span></div>
           <div class="line"><span class="k">ID</span><span class="v" id="pSid">:</span></div>
           <div class="line"><span class="k">Semester</span><span class="v" id="pSemester">:</span></div>
-          <div class="line"><span class="k">Batch</span><span class="v" id="pBatch">:</span></div>
           <div class="line"><span class="k">Section</span><span class="v" id="pSection">:</span></div>
+          <div class="line"><span class="k">Batch</span><span class="v" id="pBatch">:</span></div>
           <div class="line"><span class="k">Department</span><span class="v" id="pDept">:</span></div>
           <div class="line"><span class="k">Date of Submission</span><span class="v" id="pDate">:</span></div>
+        </div>
+
+        <!-- Team Submitted by -->
+        <div class="by" id="teamBy" style="display:none">
+          <div class="team-heading">Submitted by</div>
+          <div class="team-grid" id="pTeamGrid"></div>
+          <div class="line" style="margin-top: 22px;">
+            <span class="k" style="flex: 0 0 200px;">Date of Submission</span>
+            <span class="v" id="pTeamDate">:</span>
+          </div>
         </div>
       </div>
     </div>
@@ -350,7 +476,13 @@
   const UNI = "University of Information Technology & Sciences";
   const STORE_KEY = "uits-cover-personal";
   const ids = ["docType","docNo","topic","courseTitle","courseCode","expNo","teacher","designation","tDept",
-               "name","sid","semester","batch","section","dept","date"];
+               "teamMode",
+               "name","sid","semester","batch","section","dept",
+               "m1_name","m1_sid","m1_dept","m1_sec",
+               "m2_name","m2_sid","m2_dept","m2_sec",
+               "m3_name","m3_sid","m3_dept","m3_sec",
+               "m4_name","m4_sid","m4_dept","m4_sec",
+               "date"];
 
   $("logo").src = window.UITS_LOGO;
 
@@ -372,17 +504,61 @@
   const saveFields = [...document.querySelectorAll("[data-save]")].map(e => e.id);
   try {
     const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-    saveFields.forEach(k => { if (saved[k]) $(k).value = saved[k]; });
+    saveFields.forEach(k => { if (saved[k] && $(k)) $(k).value = saved[k]; });
   } catch (e) {}
+
+  // Sync Member 1 fields with single fields
+  if ($("name").value && !$("m1_name").value) $("m1_name").value = $("name").value;
+  if ($("sid").value && !$("m1_sid").value) $("m1_sid").value = $("sid").value;
+  if ($("dept").value && !$("m1_dept").value) $("m1_dept").value = $("dept").value;
+  if ($("section").value && !$("m1_sec").value) $("m1_sec").value = $("section").value;
+
+  function syncM1FromSingle() {
+    $("m1_name").value = $("name").value;
+    $("m1_sid").value = $("sid").value;
+    $("m1_dept").value = $("dept").value;
+    $("m1_sec").value = $("section").value;
+  }
+  function syncSingleFromM1() {
+    $("name").value = $("m1_name").value;
+    $("sid").value = $("m1_sid").value;
+    $("dept").value = $("m1_dept").value;
+    $("section").value = $("m1_sec").value;
+  }
+  ["name", "sid", "dept", "section"].forEach(k => {
+    $(k).addEventListener("input", syncM1FromSingle);
+  });
+  $("m1_name").addEventListener("input", syncSingleFromM1);
+  $("m1_sid").addEventListener("input", syncSingleFromM1);
+  $("m1_dept").addEventListener("input", () => {
+    syncSingleFromM1();
+    const d = $("m1_dept").value;
+    ["m2_dept", "m3_dept", "m4_dept"].forEach(id => {
+      if (!$(id).value) $(id).value = d;
+    });
+  });
+  $("m1_sec").addEventListener("input", () => {
+    syncSingleFromM1();
+    const s = $("m1_sec").value;
+    ["m2_sec", "m3_sec", "m4_sec"].forEach(id => {
+      if (!$(id).value) $(id).value = s;
+    });
+  });
+  $("teamMode").addEventListener("change", () => {
+    render();
+    persist();
+  });
+
   function persist() {
     try {
-      const o = {}; saveFields.forEach(k => o[k] = $(k).value);
+      const o = {}; saveFields.forEach(k => { if ($(k)) o[k] = $(k).value; });
       localStorage.setItem(STORE_KEY, JSON.stringify(o));
     } catch (e) {}
   }
   $("clearSaved").onclick = () => {
     try { localStorage.removeItem(STORE_KEY); } catch (e) {}
-    saveFields.forEach(k => $(k).value = "");
+    saveFields.forEach(k => { if ($(k)) $(k).value = ""; });
+    $("teamMode").value = "1";
     render();
   };
 
@@ -398,13 +574,19 @@
     return `${String(d).padStart(2,"0")} ${months[m-1]} ${y}`;
   }
   function data() {
-    const v = {}; ids.forEach(k => v[k] = $(k).value.trim());
+    const v = {}; ids.forEach(k => { if ($(k)) v[k] = $(k).value.trim(); });
     v.heading = v.topic;
     v.typeLine = v.docType + (v.docNo ? " - " + v.docNo : "");
     v.dateStr = fmtDate(v.date);
     v.uni = v.teacher ? UNI : "";
     v.tDeptLine = v.tDept ? "Department of " + v.tDept.replace(/^Department of\s*/i, "") : "";
+    v.teamMode = Number($("teamMode").value || 1);
     return v;
+  }
+
+  function escapeText(str) {
+    if (!str) return "";
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   // ---------- preview ----------
@@ -420,15 +602,58 @@
     $("pDesignation").textContent = v.designation;
     $("pTDept").textContent = v.tDeptLine;
     $("pUni").textContent = v.uni;
-    $("pName").textContent = ": " + v.name;
-    $("pSid").textContent = ": " + v.sid;
-    $("pSemester").textContent = ": " + v.semester;
-    $("pBatch").textContent = ": " + v.batch;
-    $("pSection").textContent = ": " + v.section;
-    $("pDept").textContent = ": " + v.dept;
-    $("pDate").textContent = ": " + v.dateStr;
+
+    const mode = v.teamMode;
+
+    if (mode === 1) {
+      $("singleWrap").style.display = "contents";
+      $("teamWrap").style.display = "none";
+      $("singleBy").style.display = "";
+      $("teamBy").style.display = "none";
+
+      $("pName").textContent = ": " + v.name;
+      $("pSid").textContent = ": " + v.sid;
+      $("pSemester").textContent = ": " + v.semester;
+      $("pBatch").textContent = ": " + v.batch;
+      $("pSection").textContent = ": " + v.section;
+      $("pDept").textContent = ": " + v.dept;
+      $("pDate").textContent = ": " + v.dateStr;
+    } else {
+      $("singleWrap").style.display = "none";
+      $("teamWrap").style.display = "contents";
+      $("m3Wrap").style.display = mode >= 3 ? "contents" : "none";
+      $("m4Wrap").style.display = mode >= 4 ? "contents" : "none";
+
+      $("singleBy").style.display = "none";
+      $("teamBy").style.display = "";
+
+      const grid = $("pTeamGrid");
+      grid.className = "team-grid cols-" + mode;
+      grid.innerHTML = "";
+
+      const teamMembers = [
+        { name: v.m1_name || v.name, sid: v.m1_sid || v.sid, dept: v.m1_dept || v.dept, section: v.m1_sec || v.section },
+        { name: v.m2_name, sid: v.m2_sid, dept: v.m2_dept || v.m1_dept || v.dept, section: v.m2_sec || v.m1_sec || v.section },
+        { name: v.m3_name, sid: v.m3_sid, dept: v.m3_dept || v.m1_dept || v.dept, section: v.m3_sec || v.m1_sec || v.section },
+        { name: v.m4_name, sid: v.m4_sid, dept: v.m4_dept || v.m1_dept || v.dept, section: v.m4_sec || v.m1_sec || v.section },
+      ].slice(0, mode);
+
+      teamMembers.forEach(m => {
+        const col = document.createElement("div");
+        col.className = "team-col";
+        col.innerHTML = `
+          <div class="team-row">Name: ${escapeText(m.name)}</div>
+          <div class="team-row">ID: ${escapeText(m.sid)}</div>
+          <div class="team-row">Department: ${escapeText(m.dept)}</div>
+          <div class="team-row">Section: ${escapeText(m.section)}</div>
+        `;
+        grid.appendChild(col);
+      });
+
+      $("pTeamDate").textContent = ": " + v.dateStr;
+    }
   }
-  ids.forEach(k => $(k).addEventListener("input", () => { render(); persist(); }));
+  ids.forEach(k => { if ($(k)) $(k).addEventListener("input", () => { render(); persist(); }); });
   render();
 
   // scale the A4 page to fit the preview column
@@ -445,7 +670,8 @@
   // ---------- downloads ----------
   function fileBase() {
     const v = data();
-    return [v.sid, v.courseCode.replace(/\s+/g, ""), v.typeLine.replace(/[\s.\-]+/g, "_")]
+    const id = v.teamMode > 1 ? (v.m1_sid || v.sid || "Team") : v.sid;
+    return [id, v.courseCode.replace(/\s+/g, ""), v.typeLine.replace(/[\s.\-]+/g, "_")]
       .filter(Boolean).join("_") || "UITS_Cover_Page";
   }
 
@@ -490,11 +716,56 @@
     });
     // fixed gap so "Submitted by" sits in the lower part of the page like the template
     const filled = [v.teacher, v.designation, v.tDeptLine, v.uni].filter(Boolean).length;
-    children.push(new D.Paragraph({ spacing: { before: Math.max(400, 3200 - filled * 430), after: 180 },
-      children: [run("Submitted by:", { underline: {} })] }));
-    [["Name", v.name], ["ID", v.sid], ["Semester", v.semester], ["Batch", v.batch],
-     ["Section", v.section], ["Department", v.dept], ["Date of Submission", v.dateStr]]
-      .forEach(([k, val]) => children.push(kv(k, val, 3000)));
+    const mode = v.teamMode;
+
+    if (mode === 1) {
+      children.push(new D.Paragraph({ spacing: { before: Math.max(400, 3200 - filled * 430), after: 180 },
+        children: [run("Submitted by:", { underline: {} })] }));
+      [["Name", v.name], ["ID", v.sid], ["Semester", v.semester], ["Section", v.section],
+       ["Batch", v.batch], ["Department", v.dept], ["Date of Submission", v.dateStr]]
+        .forEach(([k, val]) => children.push(kv(k, val, 3000)));
+    } else {
+      children.push(new D.Paragraph({ spacing: { before: Math.max(350, 3000 - filled * 400), after: 180 },
+        children: [run("Submitted by", { bold: true })] }));
+
+      const count = mode;
+      const fontSize = count === 4 ? 24 : count === 3 ? 26 : 28;
+      const cellWidth = Math.floor(9314 / count);
+      const noBorder = { style: D.BorderStyle.NONE, size: 0, color: "auto" };
+      const borders = {
+        top: noBorder, bottom: noBorder, left: noBorder, right: noBorder,
+        insideHorizontal: noBorder, insideVertical: noBorder,
+      };
+
+      const teamMembers = [
+        { name: v.m1_name || v.name, sid: v.m1_sid || v.sid, dept: v.m1_dept || v.dept, section: v.m1_sec || v.section },
+        { name: v.m2_name, sid: v.m2_sid, dept: v.m2_dept || v.m1_dept || v.dept, section: v.m2_sec || v.m1_sec || v.section },
+        { name: v.m3_name, sid: v.m3_sid, dept: v.m3_dept || v.m1_dept || v.dept, section: v.m3_sec || v.m1_sec || v.section },
+        { name: v.m4_name, sid: v.m4_sid, dept: v.m4_dept || v.m1_dept || v.dept, section: v.m4_sec || v.m1_sec || v.section },
+      ].slice(0, count);
+
+      const cells = teamMembers.map(m => new D.TableCell({
+        borders,
+        width: { size: cellWidth, type: D.WidthType.DXA },
+        children: [
+          new D.Paragraph({ spacing: { after: 50 }, children: [run("Name: " + (m.name || ""), { size: fontSize })] }),
+          new D.Paragraph({ spacing: { after: 50 }, children: [run("ID: " + (m.sid || ""), { size: fontSize })] }),
+          new D.Paragraph({ spacing: { after: 50 }, children: [run("Department: " + (m.dept || ""), { size: fontSize })] }),
+          new D.Paragraph({ spacing: { after: 50 }, children: [run("Section: " + (m.section || ""), { size: fontSize })] }),
+        ],
+      }));
+
+      children.push(new D.Table({
+        width: { size: 9314, type: D.WidthType.DXA },
+        borders,
+        rows: [new D.TableRow({ children: cells })],
+      }));
+
+      children.push(new D.Paragraph({
+        spacing: { before: 260 },
+        children: [run("Date of Submission: " + v.dateStr)],
+      }));
+    }
 
     const doc = new D.Document({
       styles: { default: { document: { run: { font: FONT, size: 32 } } } },

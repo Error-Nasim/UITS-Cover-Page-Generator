@@ -5,6 +5,7 @@ Fill in the form and download a ready-to-print UITS cover page as **Word (.docx)
 **Live site:** https://minhaz-cant-code.github.io/UITS-Cover-Page-Generator/
 
 - Live A4 preview in the UITS template
+- Single student or team submission (2, 3, or 4 members) with side-by-side member columns
 - Optional topic heading, assignment/lab number and experiment number
 - Remembers your name, ID, semester, batch, section and department in your browser
 - Light and dark mode
