@@ -137,9 +137,92 @@
   .btn-small { height: clamp(30px, 4.3vh, 46px); padding: 0 10px; font-size: clamp(12px, 1.5vh, 15px); font-weight: 600; }
   .clear-wrap { display: flex; align-items: flex-end; }
   .actions { grid-column: span 6; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+
+  /* Checkbox pills for Teacher (1, 2) and Student (1, 2, 3, 4) */
+  .check-pill-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .check-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 14px;
+    min-width: 52px;
+    height: clamp(30px, 4.3vh, 46px);
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--field);
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+    font-size: clamp(13px, 1.6vh, 15px);
+    font-weight: 600;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .check-pill:hover {
+    border-color: var(--accent);
+    background: var(--hover);
+  }
+  .check-pill input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+  .check-pill .square-cb {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    background: var(--panel);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+  .check-pill .square-cb::after {
+    content: "";
+    display: none;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-0.5px, -1px);
+  }
+  .check-pill.active {
+    border-color: var(--accent);
+    background: rgba(138, 28, 34, 0.08);
+    color: var(--accent);
+    font-weight: 700;
+  }
+  :root[data-theme="dark"] .check-pill.active,
+  :root:not([data-theme="light"]) .check-pill.active {
+    background: rgba(233, 133, 139, 0.15);
+  }
+  .check-pill.active .square-cb {
+    background: var(--maroon);
+    border-color: var(--maroon);
+  }
+  :root[data-theme="dark"] .check-pill.active .square-cb,
+  :root:not([data-theme="light"]) .check-pill.active .square-cb {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .check-pill.active .square-cb::after {
+    display: block;
+  }
+
   @media (max-height: 620px) {
     label { margin: 4px 0 2px; }
-    input, select, .btn-small { height: 30px; }
+    input, select, .btn-small, .check-pill { height: 30px; }
     .btn { height: 36px; }
     header { padding: 6px 16px 2px; }
     header h1 { font-size: 18px; }
@@ -173,6 +256,16 @@
   .page .to { margin-top: 44px; min-height: 270px; }
   .page .to p { margin: 0 0 4px; }
   .page .to .tname { font-weight: bold; }
+  .page .teacher-grid.cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15pt;
+    line-height: 1.35;
+  }
+  .page .teacher-col p { margin: 0 0 4px; }
+  .page .teacher-col .tname { font-weight: bold; }
 
   /* Team members section on the A4 page */
   .page .team-heading { font-weight: bold; font-size: 16pt; margin: 0 0 16px; font-family: "Times New Roman", Times, serif; }
@@ -199,7 +292,7 @@
   html.phone label { font-size: 12px; margin: 6px 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   html.phone .section-title { font-size: 11px; margin-top: 10px; }
   html.phone .section-title:first-child { margin-top: 0; }
-  html.phone input, html.phone select, html.phone .btn-small { height: 34px; font-size: 14px; }
+  html.phone input, html.phone select, html.phone .btn-small, html.phone .check-pill { height: 34px; font-size: 14px; }
   html.phone .btn-small { font-size: 12px; }
   html.phone .btn { height: 40px; font-size: 15px; }
   html.phone .actions { margin-top: 14px; }
@@ -267,30 +360,83 @@
     </div>
 
     <div class="section-title">Submitted To</div>
+    <div class="f6">
+      <label>Teachers / Instructors</label>
+      <input type="hidden" id="teacherMode" data-save value="1">
+      <div class="check-pill-group" role="radiogroup" aria-label="Number of Teachers">
+        <label class="check-pill active" title="1 Teacher / Instructor">
+          <input type="radio" name="teacherCount" value="1" checked>
+          <span class="square-cb"></span>
+          <span>1</span>
+        </label>
+        <label class="check-pill" title="2 Teachers / Instructors">
+          <input type="radio" name="teacherCount" value="2">
+          <span class="square-cb"></span>
+          <span>2</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Teacher 1 -->
+    <div id="t1Header" class="team-m-hdr" style="display:none">Teacher 1</div>
     <div class="f2">
       <label for="teacher">Teacher's Name</label>
-      <input id="teacher" placeholder="Teacher's name">
+      <input id="teacher" placeholder="Teacher's name" data-save>
     </div>
     <div class="f2">
       <label for="designation">Designation</label>
-      <input id="designation" list="designations" placeholder="e.g. Lecturer">
+      <input id="designation" list="designations" placeholder="e.g. Lecturer" data-save>
     </div>
     <div class="f2">
-      <label for="tDept">Teacher's Department</label>
-      <input id="tDept" list="departments" placeholder="e.g. CSE">
+      <label for="tDept">Department</label>
+      <input id="tDept" list="departments" placeholder="e.g. CSE" data-save>
+    </div>
+
+    <!-- Teacher 2 -->
+    <div id="t2Wrap" style="display:none">
+      <div class="team-m-hdr">Teacher 2</div>
+      <div class="f2">
+        <label for="teacher2">Teacher 2's Name</label>
+        <input id="teacher2" placeholder="Teacher 2's name" data-save>
+      </div>
+      <div class="f2">
+        <label for="designation2">Designation</label>
+        <input id="designation2" list="designations" placeholder="e.g. Lecturer" data-save>
+      </div>
+      <div class="f2">
+        <label for="tDept2">Department</label>
+        <input id="tDept2" list="departments" placeholder="e.g. CSE" data-save>
+      </div>
     </div>
 
     <div class="section-title">Submitted By</div>
-    <div class="f3">
-      <label for="teamMode">Submission Type</label>
-      <select id="teamMode" data-save>
-        <option value="1">Individual (1 Student)</option>
-        <option value="2">Team (2 Members)</option>
-        <option value="3">Team (3 Members)</option>
-        <option value="4">Team (4 Members)</option>
-      </select>
+    <div class="f4">
+      <label>Students</label>
+      <input type="hidden" id="teamMode" data-save value="1">
+      <div class="check-pill-group" role="radiogroup" aria-label="Number of Students">
+        <label class="check-pill active" title="1 Student (Individual)">
+          <input type="radio" name="studentCount" value="1" checked>
+          <span class="square-cb"></span>
+          <span>1</span>
+        </label>
+        <label class="check-pill" title="2 Students (Team of 2)">
+          <input type="radio" name="studentCount" value="2">
+          <span class="square-cb"></span>
+          <span>2</span>
+        </label>
+        <label class="check-pill" title="3 Students (Team of 3)">
+          <input type="radio" name="studentCount" value="3">
+          <span class="square-cb"></span>
+          <span>3</span>
+        </label>
+        <label class="check-pill" title="4 Students (Team of 4)">
+          <input type="radio" name="studentCount" value="4">
+          <span class="square-cb"></span>
+          <span>4</span>
+        </label>
+      </div>
     </div>
-    <div class="f3 clear-wrap">
+    <div class="f2 clear-wrap">
       <button type="button" class="btn btn-outline btn-small" id="clearSaved"
         title="Your name, ID, and team details are remembered in this browser.">Clear saved info</button>
     </div>
@@ -441,10 +587,28 @@
 
         <div class="to">
           <div class="sub">Submitted to:</div>
-          <p class="tname" id="pTeacher"></p>
-          <p id="pDesignation"></p>
-          <p id="pTDept"></p>
-          <p id="pUni"></p>
+          <!-- 1 Teacher View -->
+          <div id="singleTeacher">
+            <p class="tname" id="pTeacher"></p>
+            <p id="pDesignation"></p>
+            <p id="pTDept"></p>
+            <p id="pUni"></p>
+          </div>
+          <!-- 2 Teachers View -->
+          <div id="teamTeacher" class="teacher-grid cols-2" style="display:none">
+            <div class="teacher-col">
+              <p class="tname" id="pTeacher1"></p>
+              <p id="pDesignation1"></p>
+              <p id="pTDept1"></p>
+              <p id="pUni1"></p>
+            </div>
+            <div class="teacher-col">
+              <p class="tname" id="pTeacher2"></p>
+              <p id="pDesignation2"></p>
+              <p id="pTDept2"></p>
+              <p id="pUni2"></p>
+            </div>
+          </div>
         </div>
 
         <!-- Individual Submitted by -->
@@ -478,7 +642,8 @@
   const $ = (id) => document.getElementById(id);
   const UNI = "University of Information Technology & Sciences";
   const STORE_KEY = "uits-cover-personal";
-  const ids = ["docType","docNo","topic","courseTitle","courseCode","expNo","teacher","designation","tDept",
+  const ids = ["docType","docNo","topic","courseTitle","courseCode","expNo",
+               "teacherMode","teacher","designation","tDept","teacher2","designation2","tDept2",
                "teamMode",
                "name","sid","semester","batch","section","dept",
                "m1_name","m1_sid","m1_dept","m1_sec",
@@ -547,9 +712,44 @@
       if (!$(id).value) $(id).value = s;
     });
   });
-  $("teamMode").addEventListener("change", () => {
+  function syncPills(name, val) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+      const isCur = String(r.value) === String(val);
+      r.checked = isCur;
+      const pill = r.closest(".check-pill");
+      if (pill) pill.classList.toggle("active", isCur);
+    });
+  }
+
+  function setTeacherMode(val) {
+    const v = String(val || "1");
+    if ($("teacherMode")) $("teacherMode").value = v;
+    syncPills("teacherCount", v);
     render();
     persist();
+  }
+
+  function setTeamMode(val) {
+    const v = String(val || "1");
+    if ($("teamMode")) $("teamMode").value = v;
+    syncPills("studentCount", v);
+    render();
+    persist();
+  }
+
+  document.querySelectorAll('input[name="teacherCount"]').forEach(r => {
+    r.addEventListener("change", () => { if (r.checked) setTeacherMode(r.value); });
+  });
+  document.querySelectorAll('input[name="studentCount"]').forEach(r => {
+    r.addEventListener("change", () => { if (r.checked) setTeamMode(r.value); });
+  });
+
+  // Sync initial pill active state from the loaded/default hidden input values
+  syncPills("teacherCount", $("teacherMode") ? ($("teacherMode").value || "1") : "1");
+  syncPills("studentCount", $("teamMode") ? ($("teamMode").value || "1") : "1");
+
+  $("tDept").addEventListener("input", () => {
+    if (!$("tDept2").value) $("tDept2").value = $("tDept").value;
   });
 
   function persist() {
@@ -561,7 +761,8 @@
   $("clearSaved").onclick = () => {
     try { localStorage.removeItem(STORE_KEY); } catch (e) {}
     saveFields.forEach(k => { if ($(k)) $(k).value = ""; });
-    $("teamMode").value = "1";
+    setTeacherMode("1");
+    setTeamMode("1");
     render();
   };
 
@@ -581,8 +782,11 @@
     v.heading = v.topic;
     v.typeLine = v.docType + (v.docNo ? " - " + v.docNo : "");
     v.dateStr = fmtDate(v.date);
+    v.teacherMode = Number($("teacherMode") ? $("teacherMode").value : 1);
     v.uni = v.teacher ? UNI : "";
     v.tDeptLine = v.tDept ? "Department of " + v.tDept.replace(/^Department of\s*/i, "") : "";
+    v.uni2 = v.teacher2 ? UNI : "";
+    v.tDeptLine2 = v.tDept2 ? "Department of " + v.tDept2.replace(/^Department of\s*/i, "") : "";
     v.teamMode = Number($("teamMode").value || 1);
     return v;
   }
@@ -601,10 +805,31 @@
     $("pCourseCode").textContent = ": " + v.courseCode;
     $("pExp").textContent = ": " + v.expNo;
     $("pExpLine").style.display = v.expNo ? "" : "none";
-    $("pTeacher").textContent = v.teacher;
-    $("pDesignation").textContent = v.designation;
-    $("pTDept").textContent = v.tDeptLine;
-    $("pUni").textContent = v.uni;
+
+    const tMode = v.teacherMode;
+    if (tMode === 1) {
+      $("t1Header").style.display = "none";
+      $("t2Wrap").style.display = "none";
+      $("singleTeacher").style.display = "";
+      $("teamTeacher").style.display = "none";
+      $("pTeacher").textContent = v.teacher;
+      $("pDesignation").textContent = v.designation;
+      $("pTDept").textContent = v.tDeptLine;
+      $("pUni").textContent = v.uni;
+    } else {
+      $("t1Header").style.display = "block";
+      $("t2Wrap").style.display = "contents";
+      $("singleTeacher").style.display = "none";
+      $("teamTeacher").style.display = "grid";
+      $("pTeacher1").textContent = v.teacher;
+      $("pDesignation1").textContent = v.designation;
+      $("pTDept1").textContent = v.tDeptLine;
+      $("pUni1").textContent = v.uni;
+      $("pTeacher2").textContent = v.teacher2;
+      $("pDesignation2").textContent = v.designation2;
+      $("pTDept2").textContent = v.tDeptLine2;
+      $("pUni2").textContent = v.uni2;
+    }
 
     const mode = v.teamMode;
 
@@ -689,7 +914,8 @@
     const v = data();
     const isIndividual = v.teamMode === 1;
     const hasMember = isIndividual ? (v.name && v.sid) : (v.m1_name || v.name);
-    const complete = Boolean(v.courseCode && v.courseTitle && hasMember);
+    const hasTeacher = v.teacherMode === 2 ? (v.teacher || v.teacher2) : v.teacher;
+    const complete = Boolean(v.courseCode && v.courseTitle && hasMember && hasTeacher);
     try {
       localStorage.setItem("uitsCover", JSON.stringify({
         v,
@@ -733,11 +959,46 @@
       ...(v.expNo ? [kv("Experiment No", v.expNo, 2550)] : []),
       new D.Paragraph({ spacing: { before: 660, after: 180 }, children: [run("Submitted to:", { underline: {} })] }),
     ];
-    [[v.teacher, true], [v.designation], [v.tDeptLine], [v.uni]].forEach(([txt, bold]) => {
-      if (txt) children.push(new D.Paragraph({ spacing: { after: 60 }, children: [run(txt, { bold: !!bold })] }));
-    });
+    if (v.teacherMode === 2) {
+      const noBorder = { style: D.BorderStyle.NONE, size: 0, color: "auto" };
+      const borders = {
+        top: noBorder, bottom: noBorder, left: noBorder, right: noBorder,
+        insideHorizontal: noBorder, insideVertical: noBorder,
+      };
+      const t1Lines = [
+        new D.Paragraph({ spacing: { after: 60 }, children: [run(v.teacher || "", { bold: true })] }),
+        ...(v.designation ? [new D.Paragraph({ spacing: { after: 60 }, children: [run(v.designation)] })] : []),
+        ...(v.tDeptLine ? [new D.Paragraph({ spacing: { after: 60 }, children: [run(v.tDeptLine)] })] : []),
+        ...(v.uni ? [new D.Paragraph({ spacing: { after: 60 }, children: [run(v.uni)] })] : []),
+      ];
+      const t2Lines = [
+        new D.Paragraph({ spacing: { after: 60 }, children: [run(v.teacher2 || "", { bold: true })] }),
+        ...(v.designation2 ? [new D.Paragraph({ spacing: { after: 60 }, children: [run(v.designation2)] })] : []),
+        ...(v.tDeptLine2 ? [new D.Paragraph({ spacing: { after: 60 }, children: [run(v.tDeptLine2)] })] : []),
+        ...(v.uni2 ? [new D.Paragraph({ spacing: { after: 60 }, children: [run(v.uni2)] })] : []),
+      ];
+      children.push(new D.Table({
+        width: { size: 9314, type: D.WidthType.DXA },
+        borders,
+        rows: [new D.TableRow({
+          children: [
+            new D.TableCell({ borders, width: { size: 4657, type: D.WidthType.DXA }, children: t1Lines }),
+            new D.TableCell({ borders, width: { size: 4657, type: D.WidthType.DXA }, children: t2Lines }),
+          ],
+        })],
+      }));
+    } else {
+      [[v.teacher, true], [v.designation], [v.tDeptLine], [v.uni]].forEach(([txt, bold]) => {
+        if (txt) children.push(new D.Paragraph({ spacing: { after: 60 }, children: [run(txt, { bold: !!bold })] }));
+      });
+    }
     // fixed gap so "Submitted by" sits in the lower part of the page like the template
-    const filled = [v.teacher, v.designation, v.tDeptLine, v.uni].filter(Boolean).length;
+    const filled = v.teacherMode === 2
+      ? Math.max(
+          [v.teacher, v.designation, v.tDeptLine, v.uni].filter(Boolean).length,
+          [v.teacher2, v.designation2, v.tDeptLine2, v.uni2].filter(Boolean).length
+        )
+      : [v.teacher, v.designation, v.tDeptLine, v.uni].filter(Boolean).length;
     const mode = v.teamMode;
 
     if (mode === 1) {

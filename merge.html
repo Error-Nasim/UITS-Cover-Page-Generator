@@ -900,15 +900,36 @@ function buildUitsCoverPdf(v) {
   doc.line(leftX, y + 1, leftX + stw, y + 1);
   y += 7;
 
-  if (v.teacher) {
-    doc.setFont("times", "bold");
-    doc.text(v.teacher, leftX, y);
-    y += 5.5;
+  const tMode = Number(v.teacherMode || 1);
+  if (tMode === 2) {
+    const tColStarts = [25, 115];
+    const topY = y;
+    let t1y = topY;
+    if (v.teacher) { doc.setFont("times", "bold"); doc.text(v.teacher, tColStarts[0], t1y); t1y += 5.5; }
+    doc.setFont("times", "normal");
+    if (v.designation) { doc.text(v.designation, tColStarts[0], t1y); t1y += 5.5; }
+    if (v.tDeptLine) { doc.text(v.tDeptLine, tColStarts[0], t1y); t1y += 5.5; }
+    if (v.uni) { doc.text(v.uni, tColStarts[0], t1y); t1y += 5.5; }
+
+    let t2y = topY;
+    if (v.teacher2) { doc.setFont("times", "bold"); doc.text(v.teacher2, tColStarts[1], t2y); t2y += 5.5; }
+    doc.setFont("times", "normal");
+    if (v.designation2) { doc.text(v.designation2, tColStarts[1], t2y); t2y += 5.5; }
+    if (v.tDeptLine2) { doc.text(v.tDeptLine2, tColStarts[1], t2y); t2y += 5.5; }
+    if (v.uni2) { doc.text(v.uni2, tColStarts[1], t2y); t2y += 5.5; }
+
+    y = Math.max(t1y, t2y);
+  } else {
+    if (v.teacher) {
+      doc.setFont("times", "bold");
+      doc.text(v.teacher, leftX, y);
+      y += 5.5;
+    }
+    doc.setFont("times", "normal");
+    if (v.designation) { doc.text(v.designation, leftX, y); y += 5.5; }
+    if (v.tDeptLine) { doc.text(v.tDeptLine, leftX, y); y += 5.5; }
+    if (v.uni) { doc.text(v.uni, leftX, y); y += 5.5; }
   }
-  doc.setFont("times", "normal");
-  if (v.designation) { doc.text(v.designation, leftX, y); y += 5.5; }
-  if (v.tDeptLine) { doc.text(v.tDeptLine, leftX, y); y += 5.5; }
-  if (v.uni) { doc.text(v.uni, leftX, y); y += 5.5; }
 
   // Submitted By
   y += 12;
