@@ -410,6 +410,9 @@
       <button type="button" class="btn btn-primary" id="dlDocx">Download Word (.docx)</button>
       <button type="button" class="btn btn-outline" id="dlPdf" title="Choose “Save as PDF” in the print dialog">Download PDF / Print</button>
     </div>
+    <div style="grid-column: span 6; margin-top: 8px;">
+      <button type="button" class="btn btn-outline" id="mergeBtn" style="font-weight: 700;">Merge with scanned pages (next page) &rarr;</button>
+    </div>
 
     <datalist id="designations">
       <option value="Lecturer"><option value="Senior Lecturer"><option value="Assistant Professor">
@@ -680,6 +683,25 @@
     document.title = fileBase();
     window.print();
     document.title = old;
+  };
+
+  $("mergeBtn").onclick = () => {
+    const v = data();
+    const isIndividual = v.teamMode === 1;
+    const hasMember = isIndividual ? (v.name && v.sid) : (v.m1_name || v.name);
+    const complete = Boolean(v.courseCode && v.courseTitle && hasMember);
+    try {
+      localStorage.setItem("uitsCover", JSON.stringify({
+        v,
+        complete,
+        docLabel: v.typeLine || (v.docType + (v.docNo ? " - " + v.docNo : "")),
+        logo: window.UITS_LOGO,
+        ts: Date.now()
+      }));
+    } catch (e) {
+      console.error("Storage error:", e);
+    }
+    location.href = "merge.html" + (complete ? "?cover=1" : "");
   };
 
   $("dlDocx").onclick = async () => {

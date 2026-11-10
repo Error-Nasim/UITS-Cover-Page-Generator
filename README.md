@@ -6,6 +6,7 @@ Fill in the form and download a ready-to-print UITS cover page as **Word (.docx)
 
 - Live A4 preview in the UITS template
 - Single student or team submission (2, 3, or 4 members) with side-by-side member columns
+- Scan & Merge tool: upload assignment photos, PDFs or Word files, auto-crop to A4, enhance colors, and merge into one single PDF
 - Optional topic heading, assignment/lab number and experiment number
 - Remembers your name, ID, semester, batch, section and department in your browser
 - Light and dark mode
