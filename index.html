@@ -490,45 +490,12 @@
         font-weight: bold;
       }
 
-      /* Team members section on the A4 page */
-      .page .team-heading {
-        font-weight: bold;
-        font-size: 16pt;
-        margin: 0 0 16px;
-        font-family: "Times New Roman", Times, serif;
+      /* Team members section on the A4 page: numbered "Name (ID)" list */
+      .page .team-list {
+        margin: 0 0 18px;
       }
-      .page .team-grid {
-        display: grid;
-        width: 100%;
-        font-family: "Times New Roman", Times, serif;
-      }
-      .page .team-grid.cols-2 {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 48px;
-        font-size: 15pt;
-        line-height: 1.45;
-      }
-      .page .team-grid.cols-3 {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        font-size: 13.5pt;
-        line-height: 1.4;
-      }
-      .page .team-grid.cols-4 {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        font-size: 12pt;
-        line-height: 1.35;
-      }
-      .page .team-col {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-      }
-      .page .team-row {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      .page .team-list .team-item {
+        margin: 0 0 10px;
       }
 
       /* Phones / small windows: stack and allow normal scrolling */
@@ -1122,13 +1089,19 @@
 
             <!-- Team Submitted by -->
             <div class="by" id="teamBy" style="display: none">
-              <div class="team-heading">Submitted by</div>
-              <div class="team-grid" id="pTeamGrid"></div>
-              <div class="line" style="margin-top: 22px">
-                <span class="k" style="flex: 0 0 200px"
-                  >Date of Submission</span
-                >
-                <span class="v" id="pTeamDate">:</span>
+              <div class="sub">Submitted by:</div>
+              <div class="team-list" id="pTeamList"></div>
+              <div class="line">
+                <span class="k">Department</span
+                ><span class="v" id="pTeamDept">:</span>
+              </div>
+              <div class="line">
+                <span class="k">Section</span
+                ><span class="v" id="pTeamSec">:</span>
+              </div>
+              <div class="line">
+                <span class="k">Date of Submission</span
+                ><span class="v" id="pTeamDate">:</span>
               </div>
             </div>
           </div>
@@ -1414,6 +1387,13 @@
         }
 
         // ---------- preview ----------
+        // "1) Name (ID)" — the ID part is left out while it is empty
+        function memberLine(m, i) {
+          const name = (m.name || "").trim();
+          const sid = (m.sid || "").trim();
+          return `${i + 1}) ${name}${sid ? ` (${sid})` : ""}`;
+        }
+
         function render() {
           const v = data();
           const isOther =
@@ -1487,9 +1467,8 @@
             $("singleBy").style.display = "none";
             $("teamBy").style.display = "";
 
-            const grid = $("pTeamGrid");
-            grid.className = "team-grid cols-" + mode;
-            grid.innerHTML = "";
+            const list = $("pTeamList");
+            list.innerHTML = "";
 
             const teamMembers = [
               {
@@ -1518,18 +1497,15 @@
               },
             ].slice(0, mode);
 
-            teamMembers.forEach((m) => {
-              const col = document.createElement("div");
-              col.className = "team-col";
-              col.innerHTML = `
-          <div class="team-row">Name: ${escapeText(m.name)}</div>
-          <div class="team-row">ID: ${escapeText(m.sid)}</div>
-          <div class="team-row">Department: ${escapeText(m.dept)}</div>
-          <div class="team-row">Section: ${escapeText(m.section)}</div>
-        `;
-              grid.appendChild(col);
+            teamMembers.forEach((m, i) => {
+              const item = document.createElement("div");
+              item.className = "team-item";
+              item.textContent = memberLine(m, i);
+              list.appendChild(item);
             });
 
+            $("pTeamDept").textContent = ": " + (teamMembers[0].dept || "");
+            $("pTeamSec").textContent = ": " + (teamMembers[0].section || "");
             $("pTeamDate").textContent = ": " + v.dateStr;
           }
         }
@@ -1828,30 +1804,14 @@
             children.push(
               new D.Paragraph({
                 spacing: {
-                  before: Math.max(350, 3000 - filled * 400),
+                  before: Math.max(400, 3200 - filled * 430),
                   after: 180,
                 },
-                children: [run("Submitted by", { bold: true })],
+                children: [run("Submitted by:", { underline: {} })],
               }),
             );
 
             const count = mode;
-            const fontSize = count === 4 ? 24 : count === 3 ? 26 : 28;
-            const cellWidth = Math.floor(9314 / count);
-            const noBorder = {
-              style: D.BorderStyle.NONE,
-              size: 0,
-              color: "auto",
-            };
-            const borders = {
-              top: noBorder,
-              bottom: noBorder,
-              left: noBorder,
-              right: noBorder,
-              insideHorizontal: noBorder,
-              insideVertical: noBorder,
-            };
-
             const teamMembers = [
               {
                 name: v.m1_name || v.name,
@@ -1879,58 +1839,20 @@
               },
             ].slice(0, count);
 
-            const cells = teamMembers.map(
-              (m) =>
-                new D.TableCell({
-                  borders,
-                  width: { size: cellWidth, type: D.WidthType.DXA },
-                  children: [
-                    new D.Paragraph({
-                      spacing: { after: 50 },
-                      children: [
-                        run("Name: " + (m.name || ""), { size: fontSize }),
-                      ],
-                    }),
-                    new D.Paragraph({
-                      spacing: { after: 50 },
-                      children: [
-                        run("ID: " + (m.sid || ""), { size: fontSize }),
-                      ],
-                    }),
-                    new D.Paragraph({
-                      spacing: { after: 50 },
-                      children: [
-                        run("Department: " + (m.dept || ""), {
-                          size: fontSize,
-                        }),
-                      ],
-                    }),
-                    new D.Paragraph({
-                      spacing: { after: 50 },
-                      children: [
-                        run("Section: " + (m.section || ""), {
-                          size: fontSize,
-                        }),
-                      ],
-                    }),
-                  ],
+            teamMembers.forEach((m, i) =>
+              children.push(
+                new D.Paragraph({
+                  spacing: { after: 100 },
+                  children: [run(memberLine(m, i))],
                 }),
+              ),
             );
-
-            children.push(
-              new D.Table({
-                width: { size: 9314, type: D.WidthType.DXA },
-                borders,
-                rows: [new D.TableRow({ children: cells })],
-              }),
-            );
-
-            children.push(
-              new D.Paragraph({
-                spacing: { before: 260 },
-                children: [run("Date of Submission: " + v.dateStr)],
-              }),
-            );
+            children.push(new D.Paragraph({ spacing: { after: 80 }, children: [] }));
+            [
+              ["Department", teamMembers[0].dept || ""],
+              ["Section", teamMembers[0].section || ""],
+              ["Date of Submission", v.dateStr],
+            ].forEach(([k, val]) => children.push(kv(k, val, 3000)));
           }
 
           const doc = new D.Document({
