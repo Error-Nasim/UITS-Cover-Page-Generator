@@ -39,9 +39,9 @@ This project addresses these needs through two integrated modules:
 ## Key Capabilities
 
 ### 1. Standard Cover Page Generation
-- **Document Classification**: Supports both "Assignment" and "Lab Report" modes with optional document numbering (e.g., Assignment 1, Lab Report 3).
+- **Flexible Document Classification**: Supports preset options ("Assignment", "Lab Report", "Project Proposal", "Project Report", "Term Paper", "Internship Report", "Thesis Report") as well as arbitrary custom text typed by the user, with optional document numbering.
 - **Course Metadata**: Input fields for Course Title, Course Code, and optional Experiment Number.
-- **Topic Heading**: Optional field to specify an experiment title or topic directly above the document classification.
+- **Optional Topic / Title Formatting**: When an optional topic is entered, renders in the standard academic hierarchy (`[Document Type] \n on \n [Topic]`, e.g., **Assignment 1** on Adder and Subtractor). If omitted, displays the standard single document type header.
 - **Faculty / Instructor Options (1 or 2 Teachers)**:
   - Supports laboratory courses or theory sessions conducted by either a single instructor or two instructors (e.g., lab course teacher and lab co-instructor).
   - Displays instructors side-by-side in balanced columns under "Submitted to:".

@@ -859,23 +859,32 @@ function buildUitsCoverPdf(v) {
     y += lh + 6;
   }
 
-  // Heading / Course Topic
-  if (v.heading) {
+  // Document Title / Header area
+  const topicText = v.topic || v.heading;
+  if (topicText) {
+    doc.setFont("times", "bold");
+    doc.setFontSize(21);
+    doc.text(v.typeLine || "Assignment", CX, y + 8, { align: "center" });
+
+    doc.setFont("times", "normal");
+    doc.setFontSize(15);
+    doc.text("on", CX, y + 16, { align: "center" });
+
+    doc.setFont("times", "normal");
+    doc.setFontSize(19);
+    doc.text(topicText, CX, y + 25, { align: "center" });
+    y += 35;
+  } else {
+    // Document Type (Assignment / Lab Report / etc.)
     doc.setFont("times", "normal");
     doc.setFontSize(20);
-    doc.text(v.heading, CX, y + 6, { align: "center" });
-    y += 12;
+    doc.text(v.typeLine || "Assignment", CX, y + 8, { align: "center" });
+    // Underline
+    const tw = doc.getTextWidth(v.typeLine || "Assignment");
+    doc.setLineWidth(0.3);
+    doc.line(CX - tw / 2, y + 9.5, CX + tw / 2, y + 9.5);
+    y += 20;
   }
-
-  // Document Type (Assignment / Lab Report)
-  doc.setFont("times", "normal");
-  doc.setFontSize(20);
-  doc.text(v.typeLine || "Assignment", CX, y + 8, { align: "center" });
-  // Underline
-  const tw = doc.getTextWidth(v.typeLine || "Assignment");
-  doc.setLineWidth(0.3);
-  doc.line(CX - tw / 2, y + 9.5, CX + tw / 2, y + 9.5);
-  y += 20;
 
   // Course Details
   doc.setFont("times", "normal");
